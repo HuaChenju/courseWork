@@ -20,17 +20,17 @@ import java.time.Duration;
 public abstract class AbstractApiClient implements ApiClient {
 
     protected final ObjectMapper mapper;
+    protected final HttpClient client;
 
-    protected AbstractApiClient() {
+    protected AbstractApiClient(HttpClient client) {
+        this.client = client;
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     protected JsonNode executeRequest(String url) throws ApiException {
-        HttpClient customClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .build();
+
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -40,7 +40,7 @@ public abstract class AbstractApiClient implements ApiClient {
 
         try {
             HttpResponse<String> response =
-                    customClient.send(request, HttpResponse.BodyHandlers.ofString());
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
                 throw new ApiResponseException("HTTP error: " + response.statusCode());

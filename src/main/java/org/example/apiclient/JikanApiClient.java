@@ -3,6 +3,7 @@ package org.example.apiclient;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.example.exception.ApiException;
 
+import java.net.http.HttpClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,9 @@ public class JikanApiClient extends AbstractApiClient {
         return "jikan";
     }
 
+    public JikanApiClient(HttpClient client) {
+        super(client);
+    }
 
     @Override
     public JsonNode getApi(Map<String, String> queries) throws ApiException {

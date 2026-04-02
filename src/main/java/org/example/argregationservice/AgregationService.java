@@ -11,6 +11,8 @@ import org.example.storageservice.StorageService;
 
 
 import java.io.IOException;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +49,7 @@ public class AgregationService {
         );
     }
 
-    private void tasks(List<ApiClient> clients, String fileName, boolean append, StorageService storage) {
+    void tasks(List<ApiClient> clients, String fileName, boolean append, StorageService storage) {
 
         for (ApiClient client : clients) {
             Map<String, String> params = client.defaultParams();
@@ -102,14 +104,17 @@ public class AgregationService {
 
     }
 
-    private static List<ApiClient> buildClients(List<String> apiNames) {
+    static List<ApiClient> buildClients(List<String> apiNames) {
         List<ApiClient> clients = new ArrayList<>();
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .build();
 
         for (String name : apiNames) {
             switch (name.toLowerCase()) {
-                case "jikan" -> clients.add(new JikanApiClient());
-                case "bible" -> clients.add(new BibleApiClient());
-                case "github" -> clients.add(new GitHubApiClient());
+                case "jikan" -> clients.add(new JikanApiClient(client));
+                case "bible" -> clients.add(new BibleApiClient(client));
+                case "github" -> clients.add(new GitHubApiClient(client));
                 default -> System.out.println("Unknown API: " + name);
             }
         }
@@ -117,6 +122,10 @@ public class AgregationService {
         return clients;
 
 
+    }
+
+    public void setExecutor(ExecutorService executor) {
+        this.executor = executor;
     }
 
 }

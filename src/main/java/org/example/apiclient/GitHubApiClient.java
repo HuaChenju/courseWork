@@ -3,6 +3,7 @@ package org.example.apiclient;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.example.exception.ApiException;
 
+import java.net.http.HttpClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,10 @@ public class GitHubApiClient extends AbstractApiClient {
     @Override
     public String getName() {
         return "github";
+    }
+
+    public GitHubApiClient(HttpClient client) {
+        super(client);
     }
 
     @Override
